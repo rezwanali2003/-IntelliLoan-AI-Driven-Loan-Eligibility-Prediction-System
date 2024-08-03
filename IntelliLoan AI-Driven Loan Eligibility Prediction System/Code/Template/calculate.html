@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Loan Eligibility Calculator</title>
+	<style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #444444;
+            margin-top: 0px;
+        }
+    
+        form {
+            margin-top: 20px;
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444444;
+            font-size: 18px;
+        }
+    
+        input[type="number"],
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        input[type="text"],
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    
+        input[type="submit"] {
+            background-color: #444444;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    
+        input[type="submit"]:hover {
+            background-color: #666666;
+        }
+    
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #444444;
+            font-weight: bold;
+        }
+    </style>
+    
+</head>
+<body>
+	<h2 align="center">LOAN ELIGIBILITY CALCULATOR</h2>
+	<div class="container">
+		<form onsubmit="calculateLoan(); return false;">
+            <label for="Name">Name:</label>
+            <input type="text" id="income" name="name"><br>
+        
+			<label for="income">Monthly Income:</label>
+			<input type="number" id="income" name="income"><br>
+
+			<label for="expenses">Monthly Expenses:</label>
+			<input type="number" id="expenses" name="expenses"><br>
+
+			<label for="credit_score">Credit Score:</label>
+			<input type="number" id="credit_score" name="credit_score"><br>
+
+			<label for="employment">Employment Status:</label>
+			<select id="employment" name="employment">
+				<option value="employed">Employed</option>
+				<option value="self_employed">Self-Employed</option>
+				<option value="unemployed">Unemployed</option>
+			</select><br>
+
+			<label for="collateral">Collateral:</label>
+			<select id="collateral" name="collateral">
+				<option value="none">None</option>
+				<option value="property">Property</option>
+				<option value="vehicle">Vehicle</option>
+			</select><br>
+
+			<label for="loan_amount">Loan Amount:</label>
+			<input type="number" id="loan_amount" name="loan_amount"><br>
+
+			<label for="loan_term">Loan Term (in years):</label>
+			<input type="number" id="loan_term" name="loan_term"><br>
+
+			<label for="interest_rate">Interest Rate:</label>
+			<input type="number" id="interest_rate" name="interest_rate"><br>
+
+			<label for="down_payment">Down Payment:</label>
+			<input type="number" id="down_payment" name="down_payment"><br>
+
+			<label for="other_expenses">Other Monthly Expenses:</label>
+			<input type="number" id="other_expenses" name="other_expenses"><br>
+
+			<input type="submit" value="Calculate" onclick="calculateLoan()">
+		</form>
+
+		<div id="result"></div>
+	</div>
+
+	<script>
+        function calculateLoan() {
+            let income = document.getElementById("income").value;
+            let expenses = document.getElementById("expenses").value;
+            let credit_score = document.getElementById("credit_score").value;
+            let employment = document.getElementById("employment").value;
+            let collateral = document.getElementById("collateral").value;
+            let loan_amount = document.getElementById("loan_amount").value;
+            let loan_term = document.getElementById("loan_term").value;
+            let interest_rate = document.getElementById("interest_rate").value;
+            let down_payment = document.getElementById("down_payment").value;
+            let other_expenses = document.getElementById("other_expenses").value;
+    
+            // calculate the monthly income and expenses
+            let monthly_income = income;
+            let monthly_expenses = Number(expenses) + Number(other_expenses);
+    
+            // calculate the debt-to-income ratio
+            let debt_to_income_ratio = monthly_expenses / monthly_income;
+    
+            // calculate the loan-to-value ratio
+            let loan_to_value_ratio = Number(loan_amount) / (Number(down_payment) + Number(collateral));
+    
+            // calculate the credit score factor
+            let credit_score_factor = 1;
+            if (credit_score >= 700) {
+                credit_score_factor = 1.5;
+            } else if (credit_score >= 600) {
+                credit_score_factor = 1.2;
+            }
+    
+            // calculate the employment factor
+            let employment_factor = 1;
+            if (employment === "self_employed") {
+                employment_factor = 0.8;
+            } else if (employment === "unemployed") {
+                employment_factor = 0.5;
+            }
+    
+            // calculate the interest rate factor
+            let interest_rate_factor = Number(interest_rate) / 100;
+    
+            // calculate the loan eligibility
+            let loan_eligibility = (monthly_income * employment_factor * credit_score_factor * (1 - debt_to_income_ratio)) / (loan_to_value_ratio * interest_rate_factor * loan_term);
+    
+            // check if the user is eligible for the loan
+            let message;
+            if (loan_eligibility <= loan_amount) {
+                message = "Sorry, you are not eligible for the loan";
+            } 
+            else {
+                message = "Congratulations, you are eligible for the loan!.";
+            }
+    
+            // display the result as a pop-up window
+            let popup = document.createElement("div");
+            popup.classList.add("popup");
+            let result = document.createElement("p");
+            result.classList.add("result");
+            result.innerHTML = message;
+            popup.appendChild(result);
+            document.body.appendChild(popup);
+    
+            // center the pop-up window
+            let popupWidth = popup.offsetWidth;
+            let popupHeight = popup.offsetHeight;
+            popup.style.top = (window.innerHeight - popupHeight) / 2 + "px";
+            popup.style.left = (window.innerWidth - popupWidth) / 2 + "px";
+    
+            // remove the pop-up window after 3 seconds
+            setTimeout(function() {
+                popup.remove();
+            }, 3000);
+        }
+    </script>
